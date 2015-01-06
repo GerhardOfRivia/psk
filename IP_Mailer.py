@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #This will email the IP adress.
 
 import subprocess
@@ -18,11 +18,7 @@ smtpserver.ehlo
 today = datetime.date.today()
 
 # Very Linux Specific
-arg='ip route list'
-p=subprocess.Popen(arg,shell=True,stdout=subprocess.PIPE)
-data = p.communicate()
-split_data = data[0].split()
-ipaddr = split_data[split_data.index('src')+1]
+ipaddr = socket.gethostbyname(socket.gethostname())
 my_ip = 'Your ip is %s' %  ipaddr
 msg = MIMEText(my_ip)
 msg['Subject'] = 'IP For Device on %s' % today.strftime('%b %d %Y')
