@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #This will email the IP for a Raspberry Pi.
 
 import datetime
@@ -33,6 +33,6 @@ try:
     msg['To'] = to
     smtpserver.sendmail(from_user, [to], msg.as_string())
     smtpserver.quit()
-    print "Successfully sent email"
-except SMTPException:
-    print "Error: unable to send email"
+    print ("Successfully sent email")
+except smtplib.SMTPException:
+    print ("Error: unable to send email")
