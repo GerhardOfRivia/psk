@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 #This will configure the Targets file for smokeping
 import subprocess
 import sys
