@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 #This will email the IP for a Raspberry Pi.
 
 import datetime
