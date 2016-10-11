@@ -23,14 +23,17 @@ subnet = ""
 for i in range(0, 3):
     subnet += "{}.".format(route_list[i])
 
+wireless_reg = re.compile("10\.(?:8[3-5])\.\d{1,3}\.$")
+
 #Print Targets File Data
 
 print ("*** Targets ***\n\nprobe=FPing\n")
 print ("menu = Top\ntitle = Network Latency Grapher\nremark =\n")
 print ("+ ICMP\nmenu = ICMP\ntitle = ICMP\n")
 print ("++ gateway_One\ntitle = Gateway_One\nhost = {}\nalerts = red,amber,green\n".format(gateway))
-print ("++ gateway_Two\ntitle = Gateway_Two\nhost = {}2\n".format(subnet))
-print ("++ gateway_Three\ntitle = Gateway_Three\nhost = {}3\n".format(subnet))
+if wireless_reg.match(subnet) is None:
+    print ("++ gateway_Two\ntitle = Gateway_Two\nhost = {}2\n".format(subnet))
+    print ("++ gateway_Three\ntitle = Gateway_Three\nhost = {}3\n".format(subnet))
 print ("++ nexus_Two\ntitle = Nexus_Two_Loopback\nhost = 129.82.0.4\n")
 print ("++ nexus_Three\ntitle = Nexus_Three_Loopback\nhost = 129.82.0.5\n")
 print ("++ colostate\ntitle = colostate\nhost = www.colostate.edu\n")
