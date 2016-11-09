@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 # coding: utf-8
 """
-Parses the output of the system ping command.
+Generate and parses the output of the system ping command.
 """
 __version__ = '0.2'
 
 import re
+import json
 import sys
 import argparse
 import subprocess
@@ -34,15 +35,16 @@ def parse(ping_output):
 def main():
     
     parser = argparse.ArgumentParser()
-    parser.add_argument("count", type=str, help="Ping count.")
-    parser.add_argument("host", type=str, help="Ping target.")
+    parser.add_argument("count", type=int, help="Stop after sending number ECHO_REQUEST packets.")
+    parser.add_argument("host", type=str, help="Send ICMP ECHO_REQUEST to network destination.")
     args = parser.parse_args()
 
+    ping_count = str(args.count)
     ping_output = None
     ping_error = None
 
     try:
-        p = subprocess.Popen(["ping", "-c", args.count, args.host], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p = subprocess.Popen(["ping", "-c", ping_count, args.host], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         ping_output, ping_error = p.communicate()
     except OSError as e:
         print("OSError > ", e.errno)
@@ -50,11 +52,10 @@ def main():
         print("OSError > ", e.filename)
         ping_output = None
     except:
-        print("Error > ", sys.exc_info()[0])
         ping_output = None
 
     if ping_output == None:
-        print(ping_error)
+        print("Error > ping: unknown host", args.host)
         sys.exit(1)
 
     try:
@@ -62,11 +63,7 @@ def main():
     except Exception as error:
         sys.exit(1)
 
-    output = " ".join([value for key, value in ping_result.items()])
-
-    #host sent received packet_loss minping avgping maxping jitter
-
-    print(output)
+    print(json.dumps(ping_result))
     sys.exit(0)
 
 if __name__ == "__main__":
