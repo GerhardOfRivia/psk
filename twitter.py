@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+"""
+Download tweets from target account.
+"""
+
 import tweepy #https://github.com/tweepy/tweepy
 import csv
 
@@ -61,4 +65,4 @@ def get_all_tweets(screen_name):
 
 if __name__ == '__main__':
     #pass in the username of the account you want to download
-    get_all_tweets("SantaWClaus")
+    get_all_tweets("")
