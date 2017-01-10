@@ -13,7 +13,7 @@ parser.add_argument("filename", type=str, help="name of json iperf ouput.")
 args = parser.parse_args()
 
 
-with open(args.filename) as data_file:    
+with open(args.filename) as data_file:
     data = json.load(data_file)
 
 text = json.dumps(data, indexnt=4)
