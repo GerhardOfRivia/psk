@@ -13,13 +13,39 @@ from queue import Queue, Empty
 from contextlib import ContextDecorator
 
 logger = logging.getLogger()
-TIMEOUT = 60
 
+
+class MyQueue(Queue):
+
+    def my_join(self, timeout=None):
+        '''Blocks until all items in the Queue have been gotten and processed.
+        The count of unfinished tasks goes up whenever an item is added to the
+        queue. The count goes down whenever a consumer thread calls task_done()
+        to indicate the item was retrieved and all work on it is complete. If
+        optional args 'timeout' is a non-negative number, it blocks at most
+        'timeout' seconds and raises the TimeoutError exception if the number
+        of unfinished tasks is not equal to the task_done in the available time.
+        When the count of unfinished tasks drops to zero or timeout is reached,
+        join() unblocks.
+        '''
+        with self.all_tasks_done:
+            if timeout is None:
+                while self.unfinished_tasks:
+                    self.all_tasks_done.wait()
+            elif timeout and timeout < 0:
+                raise ValueError("'timeout' must be a non-negative number")
+            else:
+                endtime = time.time() + timeout
+                while self.unfinished_tasks:
+                    remaining = endtime - time.time()
+                    if remaining <= 0.0:
+                        raise TimeoutError
+                    self.all_tasks_done.wait(remaining)
 
 class Manager(Thread):
     """ Thread manages queue """
 
-    def __init__(self, name: str, task_queue: Queue, **kwargs):
+    def __init__(self, name: str, task_queue: MyQueue, **kwargs):
         super().__init__(name=name, kwargs=kwargs)
         self.task_queue = task_queue
         self.daemon = True
@@ -28,14 +54,14 @@ class Manager(Thread):
 
     def run(self):
         logger.debug(f'{self.name} running')
-        self.task_queue.join()
+        self.task_queue.my_join(10)
         self.event.set()
         logger.debug(f'{self.name} shutting down')
 
 
 class TaskWorker(Thread):
     """ Thread executing tasks from a given tasks queue """
-    def __init__(self, name: str, task_queue: Queue, **kwargs):
+    def __init__(self, name: str, task_queue: MyQueue, **kwargs):
         super().__init__(name=name, kwargs=kwargs)
         self.task_queue = task_queue
         self.daemon = True
@@ -48,7 +74,7 @@ class TaskWorker(Thread):
             try:
                 if self.event.is_set():
                     break
-                func, args, kwargs = self.task_queue.get(timeout=5)
+                func, args, kwargs = self.task_queue.get(timeout=1)
                 start_time = time.time()
                 logger.debug('started task {} [{}]'.format(func.__name__, args))
                 func(*args, **kwargs)
@@ -67,12 +93,13 @@ class TaskWorker(Thread):
 
 class ThreadPool(ContextDecorator):
     """ Pool of threads consuming tasks from a queue """
-    def __init__(self, num_threads):
+    def __init__(self, num_threads, timeout: int = None):
         logger.info(f'creating {self.__class__.__name__} with {num_threads} threads')
         if num_threads < 1:
-            raise ValueError('invalid number of threads')
+            raise ValueError("'timeout' must be a non-negative number")
+        self._timeout = timeout
         self.num_threads = num_threads
-        self._task_queue = Queue()
+        self._task_queue = MyQueue()
         self._thread_pool = []
         self._manager = None
 
@@ -92,14 +119,14 @@ class ThreadPool(ContextDecorator):
             self.add_task(func, args)
 
     def _status_manager(self):
-        timeout_dt = datetime.utcnow() + timedelta(seconds=TIMEOUT)
+        timeout_dt = datetime.utcnow() + timedelta(seconds=self._timeout) if self._timeout else None
         while True:
             try:
                 current_time = datetime.utcnow()
                 if self._manager.event.is_set():
                     logger.info(f'manager complete event {self._manager.event.is_set()}')
                     break
-                if current_time > timeout_dt:
+                if timeout_dt and current_time > timeout_dt:
                     logger.info(f'timeout complete current {current_time} timeout {timeout_dt}')
                     break
                 time.sleep(1)
@@ -138,7 +165,11 @@ def main():
     with ThreadPool(20) as pool:
         pool.map(time.sleep, task_args)
         logger.info(f'Task count {task_count} vs queue_count {pool.count()}')
-    logger.info(f'Complete')
+    logger.info(f'All tasks complete')
+    with ThreadPool(20, 9) as pool:
+        pool.map(time.sleep, task_args)
+        logger.info(f'Task count {task_count} vs queue_count {pool.count()}')
+    logger.info(f'Not all tasks complete')
 
 
 if __name__ == "__main__":
