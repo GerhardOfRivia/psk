@@ -7,7 +7,6 @@ My super simple and clean thread pool
 
 import time
 import logging
-from datetime import datetime, timedelta
 from threading import Thread, Event
 from queue import Queue, Empty
 from contextlib import ContextDecorator
@@ -17,8 +16,9 @@ logger = logging.getLogger()
 
 class MyQueue(Queue):
 
-    def my_join(self, timeout=None):
-        '''Blocks until all items in the Queue have been gotten and processed.
+    def timeout_join(self, timeout=None):
+        """
+        Blocks until all items in the Queue have been gotten and processed.
         The count of unfinished tasks goes up whenever an item is added to the
         queue. The count goes down whenever a consumer thread calls task_done()
         to indicate the item was retrieved and all work on it is complete. If
@@ -27,7 +27,12 @@ class MyQueue(Queue):
         of unfinished tasks is not equal to the task_done in the available time.
         When the count of unfinished tasks drops to zero or timeout is reached,
         join() unblocks.
-        '''
+        Args:
+            timeout: optional
+
+        Returns:
+
+        """
         with self.all_tasks_done:
             if timeout is None:
                 while self.unfinished_tasks:
@@ -42,30 +47,14 @@ class MyQueue(Queue):
                         raise TimeoutError
                     self.all_tasks_done.wait(remaining)
 
-class Manager(Thread):
-    """ Thread manages queue """
-
-    def __init__(self, name: str, task_queue: MyQueue, **kwargs):
-        super().__init__(name=name, kwargs=kwargs)
-        self.task_queue = task_queue
-        self.daemon = True
-        self.event = Event()
-        self.start()
-
-    def run(self):
-        logger.debug(f'{self.name} running')
-        self.task_queue.my_join(10)
-        self.event.set()
-        logger.debug(f'{self.name} shutting down')
-
 
 class TaskWorker(Thread):
     """ Thread executing tasks from a given tasks queue """
-    def __init__(self, name: str, task_queue: MyQueue, **kwargs):
+    def __init__(self, name: str, task_queue: MyQueue, event: Event, **kwargs):
         super().__init__(name=name, kwargs=kwargs)
         self.task_queue = task_queue
         self.daemon = True
-        self.event = Event()
+        self.event = event
         self.start()
 
     def run(self):
@@ -101,7 +90,7 @@ class ThreadPool(ContextDecorator):
         self.num_threads = num_threads
         self._task_queue = MyQueue()
         self._thread_pool = []
-        self._manager = None
+        self._event = Event()
 
     def count(self):
         """ Get approximate number of tasks on queue queue """
@@ -118,43 +107,25 @@ class ThreadPool(ContextDecorator):
         for args in args_list:
             self.add_task(func, args)
 
-    def _status_manager(self):
-        timeout_dt = datetime.utcnow() + timedelta(seconds=self._timeout) if self._timeout else None
-        while True:
-            try:
-                current_time = datetime.utcnow()
-                if self._manager.event.is_set():
-                    logger.info(f'manager complete event {self._manager.event.is_set()}')
-                    break
-                if timeout_dt and current_time > timeout_dt:
-                    logger.info(f'timeout complete current {current_time} timeout {timeout_dt}')
-                    break
-                time.sleep(1)
-            except Exception as e:
-                # An exception happened in the main execution thread
-                logger.exception(e)
-
     def __enter__(self):
         """ Start the threads and pass the task_queue """
         logger.info(f'Starting {self.num_threads} workers for ThreadPool')
         for i in range(self.num_threads):
-            t = TaskWorker(f'{self.__class__.__name__}-{i}-{self.num_threads}', self._task_queue)
+            t = TaskWorker(f'{self.__class__.__name__}-{i}-{self.num_threads}', self._task_queue, self._event)
             self._thread_pool.append(t)
         return self
 
     def __exit__(self, exc_type, exc, exc_tb):
         """ Wait for threads to complete """
         logger.info(f'Waiting for tasks on {self.__class__.__name__} to complete')
-        self._manager = Manager(f'{self.__class__.__name__}-manager', self._task_queue)
         try:
             if exc_type is None:
-                self._status_manager()
+                self._task_queue.timeout_join(self._timeout)
                 logger.info(f'Tasks on {self.__class__.__name__} complete')
             else:
                 logger.error(f'Exception during thread execution: {exc}')
         finally:
-            for thread in self._thread_pool:
-                thread.event.set()
+            self.event.set()
         return False
 
 
