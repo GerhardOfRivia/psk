@@ -13,35 +13,31 @@ logger = logging.getLogger()
 
 class TicTacToe:
 
-    def __init__(self):
-        self.board = [[None for _ in range(3)] for _ in range(3)]
-        self._players = [Player("O"), Player("X")]
+    def __init__(self, number_of_players):
+        self.size = 3
+        self.board = [[None for _ in range(self.size)] for _ in range(self.size)]
+        self._players = self._generate_players(number_of_players)
 
     def __str__(self):
         return "\n".join([str(row) for row in self.board])
 
-    def get_input(self, player_index):
-        input_try = 0
-        while True:
-            if input_try > 3:
-                exit(1)
-            try:
-                player = self._players[player_index]
-                row, col = player.get_input()
-                if row >= len(self.board) or col >= len(self.board):
-                    raise ValueError()
-                if self.board[row][col] is not None:
-                    raise RuntimeError()
-                self.board[row][col] = player.symbol
-                break
-            except ValueError:
-                print("invalid input only numbers smaller than three", file=sys.stderr)
-            except RuntimeError:
-                print("invalid input spot taken", file=sys.stderr)
-            input_try += 1
+    @staticmethod
+    def _generate_players(number_of_players):
+        if number_of_players == 0:
+            return [Player("X"), Player("O")]
+        elif number_of_players == 1:
+            return [Player("X", "input"), Player("O")]
+        elif number_of_players == 2:
+            return [Player("X", "input"), Player("O", "input")]
+        else:
+            raise ValueError("What game are you playing? (0-2)")
+
+    def get_input(self, player):
+        row, col = player.get_input(self)
+        self.board[row][col] = player.symbol
 
     def complete(self):
-        for i in range(3):
+        for i in range(self.size):
             if self.board[i][0] is None:
                 continue
             if self.board[i][0] == self.board[i][1] == self.board[i][2]:
@@ -69,7 +65,8 @@ class TicTacToe:
                 print(f"GameOver\n{self}")
             if self.complete():
                 return
-            self.get_input(turn % 2)
+            player = self._players[turn % 2]
+            self.get_input(player)
             print(f"{turn}\n{self}")
             turn += 1
 
@@ -90,20 +87,43 @@ class Player:
     def __str__(self):
         return self.symbol
 
-    def get_input(self) -> tuple:
-        return self.logic()
+    def get_input(self, tic_tac_toe: TicTacToe) -> tuple:
+        while True:
+            try:
+                row, col = self.logic(tic_tac_toe)
+                if row >= len(tic_tac_toe.board) or col >= len(tic_tac_toe.board):
+                    raise ValueError()
+                if tic_tac_toe.board[row][col] is not None:
+                    raise RuntimeError()
+                return row, col
+            except ValueError:
+                print("invalid input only numbers smaller than three", file=sys.stderr)
+            except RuntimeError:
+                print("invalid input spot taken", file=sys.stderr)
 
-    def from_user(self):
+    @staticmethod
+    def _get_options(tic_tac_toe: TicTacToe):
+        options = list()
+        for row in range(0, 3):
+            for col in range(0, 3):
+                if tic_tac_toe.board[row][col] is None:
+                    options.append((row, col))
+        return options
+
+    def from_user(self, tic_tac_toe: TicTacToe):
+        options = self._get_options(tic_tac_toe)
+        print(f"Options: {options}")
         row = int(input(f"({self.symbol}) Enter row (0-2): "))
         col = int(input(f"({self.symbol}) Enter column (0-2): "))
         return row, col
 
-    def from_random(self):
-        row = random.randint(0, 2)
-        col = random.randint(0, 2)
+    def from_random(self, tic_tac_toe: TicTacToe):
+        options = self._get_options(tic_tac_toe)
+        index = random.randint(0, len(options)-1)
+        row, col = options[index]
         print(f"({self.symbol}) Selected row (0-2): {row}")
         print(f"({self.symbol}) Selected col (0-2): {col}")
         return row, col
 
-    def from_brain(self):
+    def from_brain(self, tic_tac_toe: TicTacToe):
         pass

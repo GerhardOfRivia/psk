@@ -14,7 +14,7 @@ logger = logging.getLogger()
 
 
 def main():
-    t = TicTacToe()
+    t = TicTacToe(0)
     t.play()
 
 
