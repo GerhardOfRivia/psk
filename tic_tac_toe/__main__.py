@@ -8,7 +8,7 @@ https://jrms-random-blog.blogspot.com/2021/03/a-google-interview-question.html
 
 import logging
 
-from tic_tac_toe import TicTacToe
+from tic_tac_toe import TicTacToe, Player
 
 logger = logging.getLogger()
 
