@@ -2,8 +2,6 @@
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
 # coding: utf-8
 """
-Solve a tic-tac-toe problem
-https://jrms-random-blog.blogspot.com/2021/03/a-google-interview-question.html
 """
 
 import logging
