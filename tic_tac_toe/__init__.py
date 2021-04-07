@@ -38,18 +38,12 @@ class TicTacToe:
 
     def complete(self):
         for i in range(self.size):
-            if self.board[i][0] is None:
-                continue
             if self.board[i][0] == self.board[i][1] == self.board[i][2]:
                 print(f"{self.board[i][0]} {self.board[i][1]} {self.board[i][2]}")
                 return True
-            if self.board[0][i] is None:
-                continue
             if self.board[0][i] == self.board[1][i] == self.board[2][i]:
                 print(f"{self.board[0][i]}\n{self.board[1][i]}\n{self.board[2][i]}")
                 return True
-        if self.board[1][1] is None:
-            return False
         if self.board[0][0] == self.board[1][1] == self.board[2][2]:
             print(f"{self.board[0][0]}\\{self.board[1][1]}\\{self.board[2][2]}")
             return True

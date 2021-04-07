@@ -3,7 +3,6 @@
 # coding: utf-8
 """
 """
-import os
 import unittest
 
 from . import ThreadPool
@@ -19,9 +18,6 @@ def exception():
 
 
 class TestThreadPool(unittest.TestCase):
-
-    def setUp(self) -> None:
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'foecore.settings.development')
 
     def test_basic_queue_count(self):
         with ThreadPool(1) as thread_pool:
