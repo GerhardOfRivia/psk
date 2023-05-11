@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xtce:SpaceSystem xmlns:xtce="http://www.omg.org/spec/XTCE/20180204" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.omg.org/spec/XTCE/20180204/SpaceSystem.xsd" name="Sandbox">
+  <xtce:TelemetryMetaData>
+    <xtce:ParameterTypeSet>
+      <!-- header shorten -->
+      <xtce:IntegerParameterType name="PacketIDType" shortDescription="packet ID (3bits: version, 1bit: TM/TC, 1bit: Sec.Hdr.Flag, 11bits: APID)">
+        <xtce:UnitSet/>
+        <xtce:IntegerDataEncoding
+          sizeInBits="16"
+          encoding="unsigned"
+          byteOrder="mostSignificantByteFirst"/> <!-- big endian -->
+      </xtce:IntegerParameterType>
+      <xtce:IntegerParameterType name="Spare2AlignType" shortDescription="other header data">
+        <xtce:UnitSet/>
+        <xtce:IntegerDataEncoding
+          sizeInBits="112"
+          encoding="unsigned"
+          byteOrder="mostSignificantByteFirst"/>
+      </xtce:IntegerParameterType>
+      <!-- payload HK TM -->
+      <xtce:FloatParameterType name="CpuPercentType" shortDescription="CPU usage">
+        <xtce:UnitSet>
+          <xtce:Unit description="Percent">%</xtce:Unit>
+        </xtce:UnitSet>
+        <xtce:FloatDataEncoding
+          sizeInBits="32"
+          encoding="IEEE754_1985"
+          byteOrder="leastSignificantByteFirst"/> <!-- little endian -->
+        <xtce:DefaultAlarm>
+          <xtce:StaticAlarmRanges>
+            <xtce:WarningRange minInclusive="0.00" maxInclusive="90.00"/>
+            <xtce:CriticalRange minExclusive="0.00" maxInclusive="100.00"/>
+          </xtce:StaticAlarmRanges>
+        </xtce:DefaultAlarm>
+      </xtce:FloatParameterType>
+      <xtce:IntegerParameterType name="SpareType" shortDescription="other payload">
+        <xtce:UnitSet/>
+        <xtce:IntegerDataEncoding
+          sizeInBits="282"
+          encoding="unsigned"
+          byteOrder="mostSignificantByteFirst"/>
+      </xtce:IntegerParameterType>
+    </xtce:ParameterTypeSet>
+    <xtce:ParameterSet>
+      <!-- header -->
+      <xtce:Parameter name="PacketID" parameterTypeRef="PacketIDType"/>
+      <xtce:Parameter name="Spare2Align" parameterTypeRef="Spare2AlignType"/>
+      <!-- payload HK TM-->
+      <xtce:Parameter name="CPU" parameterTypeRef="CpuPercentType"/>
+      <xtce:Parameter name="Spare" parameterTypeRef="SpareType"/>
+    </xtce:ParameterSet>
+    <xtce:ContainerSet>
+      <xtce:SequenceContainer name="TlmHeader" abstract="true">
+        <xtce:EntryList>
+          <xtce:ParameterRefEntry parameterRef="PacketID"/>
+          <xtce:ParameterRefEntry parameterRef="Spare2Align"/>
+        </xtce:EntryList>
+      </xtce:SequenceContainer>
+      <xtce:SequenceContainer name="HK_PC_Tlm">
+        <xtce:LongDescription>Housekeeping telemetry data for PC</xtce:LongDescription>
+        <xtce:EntryList>
+          <xtce:ParameterRefEntry parameterRef="CPU"/>
+          <xtce:ParameterRefEntry parameterRef="Spare"/>
+        </xtce:EntryList>
+      </xtce:SequenceContainer>
+    </xtce:ContainerSet>
+  </xtce:TelemetryMetaData>
+</xtce:SpaceSystem>
