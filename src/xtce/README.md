@@ -1,11 +1,12 @@
 # XTCE
 
-```shell
-$ pip install xsdata[cli]
+```sh
+pip install xsdata[cli]
 ```
 
-```shell
-$ xsdata generate -p miniature.xtce.generated miniature/xtce/xtce-dtc-18-02-04.xsd 
+`xsdata generate -p miniature.xtce.generated tests/data/xtce.xsd`
+
+```sh
 Parsing schema xtce-dtc-18-02-04.xsd
 Parsing schema xml.xsd
 Compiling schema xml.xsd

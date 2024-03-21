@@ -1,16 +1,14 @@
 [tool.poetry]
-name = "psk-heatmap"
+name = "psk-generator"
 version = "0.1.0"
 description = ""
 authors = [""]
 readme = "README.md"
-packages = [{include = "heatmap"}]
+packages = [{include = "generator"}]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-opencv-python = "^4.8.0.76"
-pillow = "^10.0.0"
-exif = "^1.6.0"
+ccsdspy = "^1.2.1"
 
 
 [build-system]

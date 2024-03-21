@@ -2,12 +2,13 @@
 name = "psk-sag"
 version = "0.1.0"
 description = ""
-authors = [""]
+authors = ["GerhardOfRivia <10352022+GerhardOfRivia@users.noreply.github.com>"]
 readme = "README.md"
 packages = [{include = "sag"}]
 
 [tool.poetry.dependencies]
 python = "^3.8"
+pydantic = "^2.3.0"
 
 
 [build-system]

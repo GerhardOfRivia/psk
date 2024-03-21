@@ -1,16 +1,12 @@
 [tool.poetry]
-name = "psk-heatmap"
+name = "blac"
 version = "0.1.0"
 description = ""
-authors = [""]
+authors = ["GerhardOfRivia <10352022+GerhardOfRivia@users.noreply.github.com>"]
 readme = "README.md"
-packages = [{include = "heatmap"}]
 
 [tool.poetry.dependencies]
-python = "^3.8"
-opencv-python = "^4.8.0.76"
-pillow = "^10.0.0"
-exif = "^1.6.0"
+python = "^3.10"
 
 
 [build-system]
