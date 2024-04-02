@@ -3,7 +3,6 @@
 
 import argparse
 from dataclasses import dataclass
-import io
 import struct
 from typing import Optional
 
@@ -14,7 +13,7 @@ from generator.chaos import Lorenz
 class PacketField:
     name: str
     data_type: str = "float"
-    bit_length: int = 32 # 4 bytes
+    bit_length: int = 32  # 4 bytes
     value: Optional[float] = None
 
 
@@ -31,30 +30,31 @@ class Packet:
     def read(self, data: bytes):
         version_type_header_apid, sequence_data, length = self._s_header.unpack(data[:6])
         version = (version_type_header_apid >> 8 & 0xE0) >> 5
-        #print("version", version, bin(version))
+        # print("version", version, bin(version))
         packet_type = (version_type_header_apid >> 8 & 0x10) >> 4
-        #print("packet_type", packet_type, bin(packet_type))
+        # print("packet_type", packet_type, bin(packet_type))
         secondary_header = (version_type_header_apid >> 8 & 0x08) >> 3
-        #print("secondary_header", secondary_header, bin(secondary_header))
+        # print("secondary_header", secondary_header, bin(secondary_header))
         apid = version_type_header_apid & 0x07FF
-        #print("apid", apid, bin(apid))
+        # print("apid", apid, bin(apid))
         sequence_flag = (sequence_data >> 8 & 0xC0) >> 6
-        #print("sequence_flag", sequence_flag, bin(sequence_flag))
+        # print("sequence_flag", sequence_flag, bin(sequence_flag))
         sequence_number = sequence_data & 0x3FFF
-        #print("sequence_number", sequence_number, bin(sequence_number))
+        # print("sequence_number", sequence_number, bin(sequence_number))
         if length != len(data[6:]):
             print("warning packet length doesn't match", length, len(data[6:]))
-        #print("length", length, bin(length))
+        # print("length", length, bin(length))
         data_points = self._s_body.unpack(data[6:])
         for i, value in enumerate(data_points):
             self.fields[i].value = value
-        #print("fields", self.fields)
-        
+        # print("fields", self.fields)
 
     def write(self):
-        five_bits = ((0x1 << 5) & 0xE0) | ((0 << 4) & 0x10) | (0 & 0x01) # (3b) packet_version, (1b) packet_type, (1b) secondary_header
-        header = self._s_header.pack((five_bits << 8) | 0x1, 0x2A, len(self.fields) * 4) # (5b), (11b) apid, (2b) sequence_flag, (14b) sequence_number, (16b) packet_size 
-        body = self._s_body.pack(*[x for c in self.points for x in c]) # packet_body
+        # (3b) packet_version, (1b) packet_type, (1b) secondary_header
+        five_bits = ((0x1 << 5) & 0xE0) | ((0 << 4) & 0x10) | (0 & 0x01)
+        # (5b) five_bit, (11b) apid, (2b) sequence_flag, (14b) sequence_number, (16b) packet_size
+        header = self._s_header.pack((five_bits << 8) | 0x1, 0x2A, len(self.fields) * 4)
+        body = self._s_body.pack(*[x for c in self.points for x in c])  # packet_body
         return header + body
 
 
@@ -69,7 +69,7 @@ def main():
     # print(result)
     pkt.read(result)
     # print(pkt.fields)
-    
+
 
 if __name__ == "__main__":
     main()
