@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "psk-uplaod"
+version = "0.1.0"
+description = ""
+authors = ["gerhard van andel"]
+readme = "README.md"
+packages = [{include = "upload"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "^0.115.8"
+python-multipart = "^0.0.20"
+uvicorn = "^0.34.0"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.3.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.black]
+line-length = 120
