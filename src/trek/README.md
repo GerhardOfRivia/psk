@@ -1,7 +1,14 @@
 # Trek
 
+## Test
+
+```sh
+poetry run pytest
+```
+
 ## Run
 
-```commandline
+```sh
+poetry env activate
 python3 -m trek
 ```

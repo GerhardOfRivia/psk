@@ -22,14 +22,14 @@ def main():
     with Sender.from_conf(conf) as sender:
         sender.dataframe(chaos_df, table_name="trek", at="T")
 
-    resp = requests.get(
-        'http://localhost:9000/exp',
-        {
-            'query': 'SELECT * FROM trek',
-            'limit': '3,6'   # Rows 3, 4, 5
-        })
+    resp = requests.get("http://localhost:9000/exp", {"query": "SELECT * FROM trek"})
     print(resp.text)
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("Exiting gracefully...")
+    except Exception as e:
+        print(f"An error occurred: {e}")

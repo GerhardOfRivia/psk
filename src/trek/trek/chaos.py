@@ -2,7 +2,7 @@
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
 import datetime
 import logging
-import numpy as np
+import pandas as pd
 from typing import Tuple
 
 
@@ -70,7 +70,10 @@ class Lorenz:
         self.kwargs = kwargs
 
     def get_coordinates(self):
-        return np.array(list(next(self)))
+        return pd.DataFrame(
+            data=list(next(self)),
+            columns=["x", "y", "z"],
+        )
 
     def __len__(self):
         return self.num_points
@@ -97,7 +100,7 @@ class Lorenz:
         sigma: float = 10,
         beta: float = 8 / 3,
         rho: float = 28,
-    ) -> Tuple[float, float, float, datetime.datetime]:
+    ) -> Tuple[float, float, float]:
         """Calculate the next coordinate X, Y, Z for 3rd-order Lorenz system
         Parameters
         ----------
@@ -115,7 +118,7 @@ class Lorenz:
         x_out = sigma * (y - x)
         y_out = rho * x - y - x * z
         z_out = x * y - beta * z
-        return x_out, y_out, z_out, datetime.datetime.now()
+        return x_out, y_out, z_out
 
     def update_attributes(self, **kwargs):
         """Update chaotic system parameters."""
