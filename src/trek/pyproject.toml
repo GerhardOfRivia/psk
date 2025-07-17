@@ -2,7 +2,7 @@
 name = "psk-trek"
 version = "0.1.0"
 description = ""
-authors = ["John Smith <john@example.com>"]
+authors = ["GerhardOfRivia <10352022+GerhardOfRivia@users.noreply.github.com>"]
 readme = "README.md"
 packages = [{include = "trek"}]
 

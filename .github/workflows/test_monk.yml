@@ -1,21 +1,21 @@
-name: Test Trek Package
+name: Test Monk Package
 
 on:
   push:
     paths:
-      - 'src/trek/**'
-      - '.github/workflows/test_trek.yml'
+      - 'src/monk/**'
+      - '.github/workflows/test_monk.yml'
   pull_request:
     paths:
-      - 'src/trek/**'
-      - '.github/workflows/test_trek.yml'
+      - 'src/monk/**'
+      - '.github/workflows/test_monk.yml'
 
 jobs:
   test:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: src/trek
+        working-directory: src/monk
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python

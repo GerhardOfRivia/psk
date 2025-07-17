@@ -12,7 +12,8 @@ import uuid
 from concurrent.futures import ThreadPoolExecutor
 from queue import Queue
 
-from miniature.environment import CHUNK_SIZE
+CHUNK_SIZE_STR = os.getenv("CHUNK_SIZE", "1048576")  # Default to 1 MiB if not set
+CHUNK_SIZE = int(CHUNK_SIZE_STR) if CHUNK_SIZE_STR.isdigit() else 1048576  # Fallback to 1 MiB if conversion fails
 
 
 class SplitMachinist:

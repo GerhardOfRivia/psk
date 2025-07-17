@@ -1,14 +1,17 @@
 [tool.poetry]
-name = "psk-xtce"
+name = "psk-gooop"
 version = "0.1.0"
 description = ""
 authors = ["GerhardOfRivia <10352022+GerhardOfRivia@users.noreply.github.com>"]
 readme = "README.md"
-packages = [{include = "xtce"}]
+packages = [{include = "gooop"}]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.10"
+protobuf = "3.20.3" # Downgrade the protobuf package to 3.20.x (protoc --version = libprotoc 3.12.4)
 
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.1"
 
 [build-system]
 requires = ["poetry-core"]

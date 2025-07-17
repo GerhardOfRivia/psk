@@ -2,13 +2,16 @@
 name = "psk-monk"
 version = "0.1.0"
 description = ""
-authors = [""]
+authors = ["GerhardOfRivia <10352022+GerhardOfRivia@users.noreply.github.com>"]
+
 readme = "README.md"
 packages = [{include = "monk"}]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.10"
 
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.1"
 
 [build-system]
 requires = ["poetry-core"]
