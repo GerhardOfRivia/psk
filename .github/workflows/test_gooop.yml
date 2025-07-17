@@ -31,6 +31,6 @@ jobs:
           sudo apt-get update && sudo apt-get install -y protobuf-compiler
       - name: Generate protobuf files
         run: |
-          protoc --proto_path=./protos --python_out=./gooop ./protos/*.proto
+          protoc --proto_path=./proto --python_out=./gooop ./proto/*.proto
       - name: Run tests
         run: poetry run pytest
