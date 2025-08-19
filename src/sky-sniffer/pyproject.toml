@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "psk-sky-sniffer"
+version = "0.1.0"
+description = ""
+authors = ["GerhardOfRivia <10352022+GerhardOfRivia@users.noreply.github.com>"]
+readme = "README.md"
+packages = [{include = "skySniffer"}]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pyrtlsdr = "^0.3.0"
+numpy = "^2.3.2"
+setuptools = "^80.9.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
