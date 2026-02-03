@@ -1,0 +1,25 @@
+Bootstrap: docker
+From: python:3.12-slim
+
+%files
+    forecast/buy_vs_rent_alpha.py /app/buy_vs_rent_alpha.py
+    pyproject.toml /app/pyproject.toml
+
+%post
+    # This section is where you install software
+    apt-get update && apt-get install -y git
+    pip install numpy matplotlib 
+
+%environment
+    # Set variables that will be active when the container runs
+    export LC_ALL=C
+    export DATA_PATH=/data
+
+%runscript
+    # This is what happens when you "run" the image
+    echo "Starting the Python Apptainer..."
+    python --version
+    exec python /app/buy_vs_rent_alpha.py
+
+%help
+    This is a basic Python environment for data analysis.

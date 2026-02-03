@@ -1,5 +1,6 @@
-# protobuf
+# Extra
 *.png
+*.sif
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
