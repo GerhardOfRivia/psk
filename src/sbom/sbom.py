@@ -1,4 +1,14 @@
 #!/usr/bin/env python3
+"""
+Generate a Software Bill of Materials (SBOM) for a Python project.
+
+Usage:
+    python sbom.py <repo_path>
+
+Output:
+    manifest.json
+"""
+import argparse
 import json
 import yaml
 import re
@@ -119,18 +129,20 @@ def generate_manifest(repo_path):
     return manifest
 
 
-if __name__ == "__main__":
-    repo_path = "."
-    manifest = generate_manifest(repo_path)
+def main():
+    parser = argparse.ArgumentParser(description="Generate a Software Bill of Materials (SBOM) for a Python project.")
+    parser.add_argument("repo_path", help="Path to the repository")
+    parser.add_argument("output_path", help="Path to the output file", default="./")
+    parser.add_argument("--quiet", action="store_true", help="Suppress output")
+    args = parser.parse_args()
 
-    # JSON output
-    with open("manifest.json", "w") as f:
+    manifest = generate_manifest(args.repo_path)
+    with open(f"{args.output_path}/manifest.json", "w") as f:
         json.dump(manifest, f, indent=2)
 
-    # YAML output
-    with open("manifest.yaml", "w") as f:
-        yaml.dump(manifest, f)
+    if not args.quiet:
+        print(f"{args.output_path}/manifest.json")
 
-    print("Generated:")
-    print(" - manifest.json")
-    print(" - manifest.yaml")
+
+if __name__ == "__main__":
+    main()
