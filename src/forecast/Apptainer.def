@@ -4,11 +4,12 @@ From: python:3.12-slim
 %files
     forecast/buy_vs_rent_alpha.py /app/buy_vs_rent_alpha.py
     pyproject.toml /app/pyproject.toml
+    requirements.txt /app/requirements.txt
 
 %post
     # This section is where you install software
     apt-get update && apt-get install -y git
-    pip install numpy matplotlib 
+    pip install -r /app/requirements.txt
 
 %environment
     # Set variables that will be active when the container runs

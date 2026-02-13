@@ -170,7 +170,7 @@ def vectorized_buy_vs_rent(years=YEARS, n_sims=NUM_SIMULATIONS, seed=SEED):
     )
 
 
-if __name__ == "__main__":
+def main():
     (
         buy_results,
         rent_results,
@@ -249,3 +249,10 @@ if __name__ == "__main__":
     plt.grid(True)
     plt.savefig("buy_vs_rent_alpha.png")
     print("\nSaved histogram to buy_vs_rent_alpha.png")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as e:
+        print(f"Error running main: {e}")
